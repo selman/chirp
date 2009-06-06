@@ -9,6 +9,8 @@ require 'models'
 
 set :sessions, true
 use Rack::Flash
+DataMapper.setup(:default, "sqlite3::memory:")
+DataMapper.auto_migrate!
 
 ['/', '/home'].each do |path|
   get path do
@@ -85,7 +87,7 @@ end
 def get_user(token)
   u = URI.parse('https://rpxnow.com/api/v2/auth_info')
   req = Net::HTTP::Post.new(u.path)
-  req.set_form_data({'token' => token, 'apiKey' => '30e2f26bb637982d6b236dd7f095d2b5ba897b3f', 'format' => 'json', 'extended' => 'true'})
+  req.set_form_data({'token' => token, 'apiKey' => conf["api_key_rpx"], 'format' => 'json', 'extended' => 'true'})
   http = Net::HTTP.new(u.host,u.port)
   http.use_ssl = true if u.scheme == 'https'
   json = JSON.parse(http.request(req).body)
@@ -103,6 +105,11 @@ end
 
 # template helpers
 helpers do
+  def conf
+    @conf ||= AppConfig.load
+    @conf[Sinatra::Base.environment.to_s]
+  end
+  
   def time_ago_in_words(timestamp)
     minutes = (((Time.now - timestamp).abs)/60).round
     return nil if minutes < 0

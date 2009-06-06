@@ -4,7 +4,12 @@ require 'dm-timestamps'
 require 'dm-aggregates'
 require 'open-uri'
 
-DataMapper.setup(:default, ENV['DATABASE_URL'] || 'mysql://root:root@localhost/chirp')
+class AppConfig
+  def self.load
+    YAML.load_file(File.expand_path(File.join(File.dirname(__FILE__), "chirp.conf")))
+  end
+end
+
 class User
   include DataMapper::Resource
 
