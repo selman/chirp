@@ -122,7 +122,7 @@ ul {
 
 
 a {
-	color:#0084B4;
+	color:#e2a900;
 	text-decoration:none;
 }
 
@@ -137,7 +137,7 @@ a {
 #side_base {
 	-moz-border-radius-bottomright:5px;
 	-moz-border-radius-topright:5px;
-	background-color:#6DCFF6;
+	background-color:#FFCC33;
 	line-height:1.2;
 	width:199px;
 }
@@ -218,11 +218,14 @@ td.column {
 	font-family:georgia;
 	font-size:1.3em;
 	text-decoration:none;
+	font-weight:bold;
+	color:#000;
 }
 
 #side .stats td .label {
 	font-size:0.9em;
 	text-transform:lowercase;
+	color:#000;
 }
 
 #copyright {
