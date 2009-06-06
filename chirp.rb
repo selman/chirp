@@ -9,8 +9,23 @@ require 'models'
 
 set :sessions, true
 use Rack::Flash
-DataMapper.setup(:default, "sqlite3::memory:")
-DataMapper.auto_migrate!
+DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
+# DataMapper.auto_migrate!
+
+# Reload scripts and reset routes on change
+class Sinatra::Reloader < Rack::Reloader
+   def safe_load(file, mtime, stderr = $stderr)
+     if file == __FILE__
+       ::Sinatra::Application.reset!
+       stderr.puts "#{self.class}: reseting routes"
+     end
+     super
+   end
+end 
+
+configure :development do
+  use Sinatra::Reloader
+end
 
 ['/', '/home'].each do |path|
   get path do
@@ -49,6 +64,7 @@ end
 
 get '/:email' do
   @myself = User.get(session[:userid])
+  pass unless @myself
   @user = @myself.email == params[:email] ? @myself : User.first(:email => params[:email])
   @dm_count = dm_count   
   erb :home
