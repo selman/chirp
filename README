@@ -18,3 +18,16 @@ Update chirp.conf with RPX information
 Run:
 
 ./bin/rackup config.ru
+
+
+Use:
+
+Navigate to http://localhost:9292
+
+Sign in with an OpenID account
+
+Post messages
+
+Follow (follow nickname)
+
+Direct message (dm nickname message) <- No @ symbol
