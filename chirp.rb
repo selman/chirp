@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'sinatra'
 require 'digest/md5'
 require 'rack-flash'
@@ -12,7 +11,7 @@ set :sessions, true
 configure do
   use Rack::Flash
   DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
-  # DataMapper.auto_migrate!
+  DataMapper.auto_migrate!
 end
 
 # Reload scripts and reset routes on change
@@ -43,7 +42,7 @@ get '/logout' do
   redirect '/'
 end
 
-get '/login' do
+post '/login' do
   openid_user = get_user(params[:token])
   user = User.find(openid_user[:identifier])
   user.update_attributes({:nickname => openid_user[:nickname], :email => openid_user[:email], :photo_url => "http://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(openid_user[:email])}"}) if user.new_record?

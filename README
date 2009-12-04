@@ -1,0 +1,20 @@
+Install:
+
+gem install bundler
+gem bundle
+
+
+Configure:
+
+Sign up for a free account at https://rpxnow.com/
+
+Create a new application
+
+Copy chirp.conf.example to chirp.conf
+
+Update chirp.conf with RPX information
+
+
+Run:
+
+./bin/rackup config.ru

@@ -1,2 +1,4 @@
 chirp.conf
 *.db
+bin
+vendor

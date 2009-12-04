@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'dm-core'
 require 'dm-timestamps'
 require 'dm-aggregates'
@@ -85,14 +84,14 @@ class Chirp
 
   # process direct messages 
   def process_dm
-    self.recipient = User.first(:email => self.text.split[1])  
+    self.recipient = User.first(:nickname => self.text.split[1])  
     self.text = self.text.split[2..self.text.split.size].join(' ') # remove the first 2 words
     process
   end
 
   # process follow commands
   def process_follow 
-    Relationship.create(:user => User.first(:email => self.text.split[1]), :follower => self.user)   
+    Relationship.create(:user => User.first(:nickname => self.text.split[1]), :follower => self.user)   
     throw :halt # don't save
   end
 
