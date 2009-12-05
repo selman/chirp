@@ -11,7 +11,7 @@ set :sessions, true
 configure do
   use Rack::Flash
   DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
-  #DataMapper.auto_migrate!
+  DataMapper.auto_migrate!
 end
 
 # Reload scripts and reset routes on change
@@ -88,7 +88,7 @@ post '/register' do
   @myself = User.get(session[:userid])
   redirect '/' if @myself.nil?
   if @myself.device.nil?
-    @myself.device.new
+    @myself.device = Device.new
   end
   @myself.device.update_attributes(:app_id => params[:app_id], :push_secret => params[:push_secret])
   redirect '/home'
