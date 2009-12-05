@@ -1,3 +1,4 @@
+#\ -p 8080
 pwd = File.dirname(__FILE__)
 
 # adding current path

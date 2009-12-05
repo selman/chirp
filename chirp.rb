@@ -11,7 +11,7 @@ set :sessions, true
 configure do
   use Rack::Flash
   DataMapper.setup(:default, "sqlite3:///#{File.expand_path(File.dirname(__FILE__))}/#{Sinatra::Base.environment}.db")
-  DataMapper.auto_migrate!
+  #DataMapper.auto_migrate!
 end
 
 # Reload scripts and reset routes on change
@@ -29,10 +29,17 @@ configure :development do
   use Sinatra::Reloader
 end
 
-['/', '/home'].each do |path|
+['/', '/home', ].each do |path|
   get path do
-    if session[:userid].nil? then erb :login 
-    else redirect "/#{User.get(session[:userid]).email}"
+    if session[:userid].nil?
+      erb :login
+    else 
+      user = User.get(session[:userid])
+      if user.nil?
+        redirect "/logout"
+      else
+        redirect "/#{user.email}"
+      end
     end
   end
 end
@@ -64,9 +71,32 @@ end
   end
 end
 
+get '/register' do
+  @myself = User.get(session[:userid])
+  redirect '/' if @myself.nil?
+  unless @myself.device.nil?
+    @app_id = @myself.device.app_id
+    @push_secret = @myself.device.push_secret
+  else
+    @app_id = nil
+    @push_secret = nil
+  end
+  erb :register
+end
+
+post '/register' do
+  @myself = User.get(session[:userid])
+  redirect '/' if @myself.nil?
+  if @myself.device.nil?
+    @myself.device.new
+  end
+  @myself.device.update_attributes(:app_id => params[:app_id], :push_secret => params[:push_secret])
+  redirect '/home'
+end
+
 get '/:email' do
   @myself = User.get(session[:userid])
-  redirect '/' unless @myself
+  redirect '/' if @myself.nil?
   @user = @myself.email == params[:email] ? @myself : User.first(:email => params[:email])
   @dm_count = dm_count   
   erb :home

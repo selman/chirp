@@ -2,6 +2,7 @@ require 'dm-core'
 require 'dm-timestamps'
 require 'dm-aggregates'
 require 'open-uri'
+require 'rest_client'
 
 class AppConfig
   def self.load
@@ -22,7 +23,8 @@ class User
   has n, :direct_messages, :class_name => "Chirp"
   has n, :relationships
   has n, :followers, :through => :relationships, :class_name => "User", :child_key => [:user_id]
-  has n, :follows, :through => :relationships, :class_name => "User", :remote_name => :user, :child_key => [:follower_id]                       
+  has n, :follows, :through => :relationships, :class_name => "User", :remote_name => :user, :child_key => [:follower_id]
+  has 1, :device
 
   def self.find(identifier)
     u = first(:identifier => identifier)
@@ -49,6 +51,15 @@ class Relationship
   belongs_to :follower, :class_name => "User", :child_key => [:follower_id]
 end
 
+class Device
+  include DataMapper::Resource
+
+  property :user_id, Integer, :key => true
+  property :app_id, String
+  property :push_secret, String
+  belongs_to :user, :child_key => [:user_id]
+end
+
 class Chirp
   include DataMapper::Resource
 
@@ -62,8 +73,6 @@ class Chirp
     case 
     when starts_with?('dm ') 
       process_dm
-    when starts_with?('follow ') 
-      process_follow
     else 
       process
     end
@@ -84,14 +93,29 @@ class Chirp
 
   # process direct messages 
   def process_dm
-    self.recipient = User.first(:nickname => self.text.split[1])  
+    self.recipient = User.first(:email => self.text.split[1])  
     self.text = self.text.split[2..self.text.split.size].join(' ') # remove the first 2 words
+    unless self.recipient.device.nil?
+      user = self.recipient.device.app_id
+      pass = self.recipient.device.push_secret
+      url = "https://#{user}:#{pass}@appush.com/api/notification"
+      data = {
+        "tags" => ["chirp"],
+        "payload" => {
+          "aps" => {
+            "alert" => self.text,
+            "sound" => "meow.caf"
+          }
+      }}
+      json_data = JSON.generate(data)
+      RestClient.post url, json_data, :accept => 'application/json', :content_type => 'application/json'
+    end
     process
   end
 
   # process follow commands
-  def process_follow 
-    Relationship.create(:user => User.first(:nickname => self.text.split[1]), :follower => self.user)   
+  def process_follow
+    Relationship.create(:user => User.first(:email => self.text.split[1]), :follower => self.user)   
     throw :halt # don't save
   end
 
