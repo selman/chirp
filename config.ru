@@ -1,9 +1,7 @@
-pwd = File.dirname(__FILE__)
+require 'bundler'
 
-# adding current path
-$LOAD_PATH.unshift(pwd)
+CHIRP_ENV = ENV['RACK_ENV'] || 'development'
+Bundler.require(:default, CHIRP_ENV.to_sym)
 
-#require "#{File.dirname(__FILE__)}/vendor/bundler_gems/environment"
-
-require 'chirp'
-run Sinatra::Application
+require './chirper'
+run Chirper

@@ -1,4 +1,3 @@
 chirp.conf
+.bundle
 *.db
-bin
-vendor

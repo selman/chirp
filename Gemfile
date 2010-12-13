@@ -1,13 +1,30 @@
-source "http://gemcutter.org"
-source "http://gems.github.com"
+source "http://rubygems.org"
 
-ENV['ARCHFLAGS'] = '-arch x86_64'
+gem "sinatra", :require => 'sinatra/base'
+gem "rest-client", :require => 'rest_client'
+gem "rack-flash"
+gem "json"
+gem "dm-core"
+gem "dm-migrations"
+gem "dm-timestamps"
+gem "dm-aggregates"
+gem "dm-constraints"
+gem "dm-transactions"
+#gem "dm-types"
+#gem "dm-validations"
+#gem "dm-serializer"
 
-gem "dm-core", "~>0.9.10"
-gem "dm-timestamps", "~>0.9.10"
-gem "dm-aggregates", "~>0.9.10"
-gem "do_sqlite3"
-gem "nakajima-rack-flash"
-gem "json", ">=1.1.3"
-gem "sinatra"
-gem "rest-client"
+
+group :development do
+  gem "dm-sqlite-adapter"
+end
+
+
+group :production do
+  gem "dm-postgres-adapter"
+end
+
+
+group :testing do
+
+end
