@@ -6,7 +6,7 @@ module AppHelpers
   def get_user(token)
     u = URI.parse('https://rpxnow.com/api/v2/auth_info')
     req = Net::HTTP::Post.new(u.path)
-    req.form_data = {'token' => token, 'apiKey' => conf["api_key_rpx"], 'format' => 'json'}
+    req.form_data = {'token' => token, 'apiKey' => conf.api_key, 'format' => 'json'}
     http = Net::HTTP.new(u.host,u.port)
     http.use_ssl = true if u.scheme == 'https'
     json = JSON.parse(http.request(req).body)

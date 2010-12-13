@@ -3,21 +3,21 @@
 <table width='763px'>
 	<tr>
 		<td width='33%'>
-			<form method="POST" action="https://<%= conf["realm_rpx"] %>.rpxnow.com/openid/start?token_url=http://<%= conf["callback_url"] %>/login">
+			<form method="POST" action="https://<%= conf.realm %>.rpxnow.com/openid/start?token_url=http://<%= conf.callback_url %>/login">
 				<input type="hidden" name="openid_identifier" value="yahoo.com" />
 				<input type="image" src='/yahoo.png' />
 			</form>
 		</td>
 
 		<td width='33%'>
-			<form method="POST" action="https://<%= conf["realm_rpx"] %>.rpxnow.com/openid/start?token_url=http://<%= conf["callback_url"] %>/login">
+			<form method="POST" action="https://<%= conf.realm %>.rpxnow.com/openid/start?token_url=http://<%= conf.callback_url %>/login">
 				<input type="hidden" name="openid_identifier" value="https://www.google.com/accounts/o8/id" />
 				<input type="image" src='/google.png' />
 			</form>
 		</td>
 
 		<td width='33%'>
-			<form method="POST" action="https://<%= conf["realm_rpx"] %>.rpxnow.com/openid/start?token_url=http://<%= conf["callback_url"] %>/login">
+			<form method="POST" action="https://<%= conf.realm %>.rpxnow.com/openid/start?token_url=http://<%= conf.callback_url %>/login">
 				<input type="hidden" name="openid_identifier" value="myopenid.com" />
 				<input type="image" src='/myopenid.png' />
 			</form>

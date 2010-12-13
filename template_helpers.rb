@@ -1,8 +1,7 @@
 class Chirper < Sinatra::Base
   helpers do
     def conf
-      @conf ||= AppConfig.load
-      @conf[Sinatra::Base.environment.to_s]
+      @conf ||= ChirpConf.first(:environment => Sinatra::Base.environment.to_s)
     end
 
     def time_ago_in_words(timestamp)
@@ -24,8 +23,3 @@ class Chirper < Sinatra::Base
   end
 end
 
-class AppConfig
-  def self.load
-    YAML.load_file(File.expand_path(File.join(File.dirname(__FILE__), "chirp.conf")))
-  end
-end

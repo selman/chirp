@@ -1,5 +1,15 @@
 require 'open-uri'
 
+class ChirpConf
+  include DataMapper::Resource
+
+  property :id,           Serial
+  property :environment,  String
+  property :api_key,      String
+  property :realm,        String
+  property :callback_url, String
+
+end
 
 URL_REGEXP = Regexp.new('\b ((https?|telnet|gopher|file|wais|ftp) : [\w/#~:.?+=&%@!\-] +?) (?=[.:?\-] * (?: [^\w/#~:.?+=&%@!\-]| $ ))', Regexp::EXTENDED)
 AT_REGEXP = Regexp.new('\s@[\w.@_-]+', Regexp::EXTENDED)
@@ -15,9 +25,9 @@ class User
 
   has n, :chirps
   has n, :direct_messages, 'Chirp'
-  has n, :relationships
-  has n, :followers, self, :through => :relationships, :parent_key => [:user_id]
-  has n, :follows, self, :through => :relationships, :via => :user, :parent_key => [:follower_id]
+  has n, :friendships
+  has n, :followers, self, :through => :friendships, :via => :target
+  has n, :follows,   self, :through => :friendships, :via => :target
   has 1, :device
 
   def displayed_chirps
@@ -32,22 +42,23 @@ class User
 
 end
 
-class Relationship
+class Friendship
   include DataMapper::Resource
 
-  property :user_id, Integer, :key => true
-  property :follower_id, Integer, :key => true
-  belongs_to :user, :child_key => [:user_id]
-  belongs_to :follower, 'User', :child_key => [:follower_id]
+  property :user_id,   Integer, :key => true, :min => 1
+  property :target_id, Integer, :key => true, :min => 1
+
+  belongs_to :user, :key => true
+  belongs_to :target, 'User', :key => true
 end
 
 class Device
   include DataMapper::Resource
 
-  property :user_id, Integer, :key => true
   property :app_id, String
   property :push_secret, String
-  belongs_to :user, :child_key => [:user_id]
+
+  belongs_to :user, :key => true
 end
 
 class Chirp
@@ -55,17 +66,13 @@ class Chirp
 
   property :id, Serial
   property :text, String, :length => 140
-  property :created_at,  DateTime  
-  belongs_to :recipient, 'User', :child_key => [:recipient_id]
-  belongs_to :user  
+  property :created_at,  DateTime
+
+  belongs_to :user, :key => true
+  belongs_to :recipient, 'User', :required => false
 
   before :save do
-    case 
-    when starts_with?('dm ') 
-      process_dm
-    else 
-      process
-    end
+    starts_with?('dm ') ? process_dm : process
   end
 
   # general scrubbing of chirp
@@ -73,12 +80,12 @@ class Chirp
     # process url
     urls = self.text.scan(URL_REGEXP)
     urls.each { |url|
-      tiny_url = open("http://tinyurl.com/api-create.php?url=#{url[0]}") {|s| s.read}    
+      tiny_url = open("http://tinyurl.com/api-create.php?url=#{url[0]}") {|s| s.read}
       self.text.sub!(url[0], "<a href='#{tiny_url}'>#{tiny_url}</a>")
-    }        
+    }
     # process @
     ats = self.text.scan(AT_REGEXP)
-    ats.each { |at| self.text.sub!(at, "<a href='/#{at[2,at.length]}'>#{at}</a>") }            
+    ats.each { |at| self.text.sub!(at, "<a href='/#{at[2,at.length]}'>#{at}</a>") }
   end
 
   # process direct messages 
@@ -105,7 +112,7 @@ class Chirp
 
   # process follow commands
   def process_follow
-    Relationship.create(:user => User.first(:email => self.text.split[1]), :follower => self.user)   
+    Friendship.create(:user => User.first(:email => self.text.split[1]), :follower => self.user)
     throw :halt # don't save
   end
 

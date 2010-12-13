@@ -21,7 +21,6 @@ class Chirper < Sinatra::Base
     redirect '/home'
   end
 
-  DataMapper.auto_migrate!
   include AppHelpers
 
   ['/', '/home', ].each do |path|
@@ -57,7 +56,7 @@ class Chirper < Sinatra::Base
 
   post '/chirp' do
     user = User.get(session[:userid])
-    Chirp.create(:text => params[:chirp], :user => user)
+    Chirp.create(:text => params[:chirp], :user_id => user)
     redirect "/#{user.email}"
   end
 
@@ -101,20 +100,22 @@ class Chirper < Sinatra::Base
   end
 
   get '/follow/:email' do
-    Relationship.create(:user => User.first(:email => params[:email]), :follower => User.get(session[:userid]))
+    Friendship.create(:user => User.first(:email => params[:email]), :follower => User.get(session[:userid]))
     redirect '/home'
   end
 
   delete '/follows/:user_id/:follows_id' do
-    Relationship.first(:follower_id => params[:user_id], :user_id => params[:follows_id]).destroy
+    Friendship.first(:follower_id => params[:user_id], :user_id => params[:follows_id]).destroy
     redirect '/follows'
   end
 
   get '/direct_messages/:dir' do
     @myself = User.get(session[:userid])
     case params[:dir]
-    when 'received' then @chirps = Chirp.all(:recipient_id => @myself.id)
-    when 'sent'     then @chirps = Chirp.all(:user_id => @myself.id, :recipient_id.not => nil)
+    when 'received'
+      @chirps = Chirp.all(:recipient_id => @myself.id)
+    when 'sent'
+      @chirps = Chirp.all(:user_id => @myself.id, :recipient_id.not => nil)
     end
     @dm_count = dm_count
     erb :direct_messages
