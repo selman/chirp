@@ -42,6 +42,10 @@ GEM
     sinatra (1.1.0)
       rack (~> 1.1)
       tilt (~> 1.1)
+    slim (0.8.0)
+      temple (~> 0.1.6)
+      tilt (~> 1.1)
+    temple (0.1.6)
     tilt (1.1)
 
 PLATFORMS
@@ -60,3 +64,4 @@ DEPENDENCIES
   rack-flash
   rest-client
   sinatra
+  slim

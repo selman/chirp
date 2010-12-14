@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gem "sinatra", :require => 'sinatra/base'
 gem "rest-client", :require => 'rest_client'
+gem "slim"
 gem "rack-flash"
 gem "json"
 gem "dm-core"

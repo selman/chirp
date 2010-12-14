@@ -1,32 +1,25 @@
 require 'digest/md5'
-require 'net/http'
-require 'net/https'
 
+require_relative 'chirp_env'
+require_relative 'models'
 require_relative 'template_helpers'
 require_relative 'app_helpers'
-require_relative 'models'
 
 class Chirper < Sinatra::Base
+  include AppHelpers
   enable :sessions
   set :root, File.dirname(__FILE__)
   use Rack::Flash
-
-  configure :development do
-    DataMapper::Logger.new(STDOUT, :debug)
-    DataMapper.setup(:default, "sqlite://#{File.expand_path(File.dirname(__FILE__))}/development.db")
-  end
 
   error do
     flash[:error] = env['sinatra.error'].to_s
     redirect '/home'
   end
 
-  include AppHelpers
-
   ['/', '/home', ].each do |path|
     get path do
       if session[:userid].nil?
-        erb :login
+        slim :login
       else
         user = User.get(session[:userid])
         if user.nil?
@@ -56,7 +49,7 @@ class Chirper < Sinatra::Base
 
   post '/chirp' do
     user = User.get(session[:userid])
-    Chirp.create(:text => params[:chirp], :user_id => user)
+    user.chirps.create(:text => params[:chirp])
     redirect "/#{user.email}"
   end
 
@@ -100,12 +93,15 @@ class Chirper < Sinatra::Base
   end
 
   get '/follow/:email' do
-    Friendship.create(:user => User.first(:email => params[:email]), :follower => User.get(session[:userid]))
+    user = User.get(session[:userid])
+    user.follows << User.first(:email => params[:email])
+    user.follows.save
     redirect '/home'
   end
 
   delete '/follows/:user_id/:follows_id' do
-    Friendship.first(:follower_id => params[:user_id], :user_id => params[:follows_id]).destroy
+    user = User.get(session[:userid])
+    user.follows.get(params[:follow_id]).destroy
     redirect '/follows'
   end
 

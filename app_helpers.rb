@@ -1,3 +1,6 @@
+require 'net/http'
+require 'net/https'
+
 module AppHelpers
   def dm_count
     Chirp.count(:recipient_id => session[:userid]) + Chirp.count(:user_id => session[:userid], :recipient_id.not => nil)
