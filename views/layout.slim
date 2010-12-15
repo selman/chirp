@@ -2,25 +2,41 @@
 html
   head
     title Chirp Chirp!
-    link rel="stylesheet" type="text/css" href="/style.css"
+    link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css"
+    link href="/stylesheets/print.css" media="print" rel="stylesheet" type="text/css"
+    |<!--[if IE]>
+    link href="/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css"
+    |<![endif]-->
+    / link rel="stylesheet" type="text/css" href="/style.css"
 
-  body id="container"
+  body class="two-col"
     javascript:
       var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
       document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
     javascript:
       RPXNOW.overlay = true;
-      RPXNOW.language_preference = 'en';
-    img src="/bird.png"
+      RPXNOW.language_preference = 'tr';
 
-    - if session[:userid].nil?
-      a class="rpxnow" onclick="return false;" href="https://#{conf.realm}.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2F#{conf.callback_url}%2Flogin" Sign In
-    - else
-      a href='/home' home | 
-      a href='/direct_messages/received' direct messages #{@dm_count} | 
-      a href='/logout' logout | 
-      a href='/register' register
-      - unless @user == @myself and not @myself.follows.include?(@user)
-        a href='/follow/<%= @user.email%>' | follow this chirper!
-    div id='error' = flash[:error]
-    == yield
+    div id="container"
+
+      div id="header"
+        img src="/bird.png"
+
+      div id="content"
+        - if session[:userid].nil?
+          a class="rpxnow" onclick="return false;" href="https://#{conf.realm}.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2F#{conf.callback_url}%2Flogin" Sign In
+        - else
+          a href='/home' home | 
+          a href='/direct_messages/received' direct messages #{@dm_count} | 
+          a href='/logout' logout | 
+          a href='/register' register
+          - unless @user == @myself and not @myself.follows.include?(@user)
+            a href='/follow/<%= @user.email%>' | follow this chirper!
+          div id='error' = flash[:error]
+        == yield
+
+      div id="sidebar"
+        - unless @user.nil?
+          == slim :sidebar, :layout => false
+
+      div id="footer"

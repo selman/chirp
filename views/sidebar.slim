@@ -1,0 +1,21 @@
+div
+  a alt="Avatar from Gravatar, click to signup for one, or change your current avatar" href="http://en.gravatar.com/site/login"
+    img width="48" height="48" src=@user.photo_url class="side thumb photo fn"
+  p id="me_name"
+    =@user.nickname
+  span id="me_email" =@user.email
+div
+  tbody
+    tr
+      td
+        a rel="me" id="following_count_link" href="/follows"
+          span class="stats_count numeric" id="following_count" =@user.follows.size
+          span class="label" Following
+      td
+        a id="follower_count_link" href="/follower"
+          span class="stats_count numeric" id="follower_count" =@user.followers.size
+          span class="label" Followers
+      td
+        a href="/sausheong"
+          span class="stat_count numeric" id="update_count" =@user.chirps.size
+          span class="label" Chirps

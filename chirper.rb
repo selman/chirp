@@ -19,14 +19,11 @@ class Chirper < Sinatra::Base
   ['/', '/home', ].each do |path|
     get path do
       if session[:userid].nil?
-        slim :timeline
+        @chirps = Chirp.all
+        slim :home
       else
         user = User.get(session[:userid])
-        if user.nil?
-          redirect "/logout"
-        else
-          redirect "/#{user.email}"
-        end
+        user.nil? ? redirect("/logout") : redirect("/#{user.email}")
       end
     end
   end
@@ -85,9 +82,13 @@ class Chirper < Sinatra::Base
   end
 
   get '/:email' do
-    @myself = User.get(session[:userid])
-    redirect '/' if @myself.nil?
-    @user = @myself.email == params[:email] ? @myself : User.first(:email => params[:email])
+    @myself = User.get(params[:session])
+    if @myself.nil?
+      @user = User.first(:email => params[:email])
+    else
+      @user = (@myself.email == params[:email]) ? @myself : User.first(:email => params[:email])
+    end
+    @chirps = @user.displayed_chirps
     @dm_count = dm_count
     slim :home
   end
