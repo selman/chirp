@@ -1,9 +1,0 @@
-h2 Click on any one of the accounts to sign in.
-
-table width="763px"
-  tr
-    - p
-    td width="33%"
-      form method="POST" action="https://#{conf.realm}.rpxnow.com/openid/start?token_url=http://#{conf.callback_url}/login"
-        input type="hidden" name="openid_identifier" value="yahoo.com"
-        input type="image" src="/yahoo.png"

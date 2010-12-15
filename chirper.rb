@@ -19,7 +19,7 @@ class Chirper < Sinatra::Base
   ['/', '/home', ].each do |path|
     get path do
       if session[:userid].nil?
-        slim :login
+        slim :timeline
       else
         user = User.get(session[:userid])
         if user.nil?
@@ -89,7 +89,7 @@ class Chirper < Sinatra::Base
     redirect '/' if @myself.nil?
     @user = @myself.email == params[:email] ? @myself : User.first(:email => params[:email])
     @dm_count = dm_count
-    erb :home
+    slim :home
   end
 
   get '/follow/:email' do

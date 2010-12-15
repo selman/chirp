@@ -4,8 +4,23 @@ html
     title Chirp Chirp!
     link rel="stylesheet" type="text/css" href="/style.css"
 
-  body
+  body id="container"
+    javascript:
+      var rpxJsHost = (("https:" == document.location.protocol) ? "https://" : "http://static.");
+      document.write(unescape("%3Cscript src='" + rpxJsHost + "rpxnow.com/js/lib/rpx.js' type='text/javascript'%3E%3C/script%3E"));
+    javascript:
+      RPXNOW.overlay = true;
+      RPXNOW.language_preference = 'en';
     img src="/bird.png"
 
+    - if session[:userid].nil?
+      a class="rpxnow" onclick="return false;" href="https://#{conf.realm}.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2F#{conf.callback_url}%2Flogin" Sign In
+    - else
+      a href='/home' home | 
+      a href='/direct_messages/received' direct messages #{@dm_count} | 
+      a href='/logout' logout | 
+      a href='/register' register
+      - unless @user == @myself && @myself.follows.include?(@user)
+        a href='/follow/<%= @user.email%>' | follow this chirper!
+    div id='error' = flash[:error]
     == yield
-    

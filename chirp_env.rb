@@ -15,11 +15,14 @@ end
 
 case CHIRP_ENV
 when 'production'
+  Slim::Engine.set_default_options
   DataMapper::Logger.new(STDOUT, :info)
   DataMapper.setup(:default, ENV['DATABASE_URL'])
 when 'development'
+  Slim::Engine.set_default_options :pretty => true
   DataMapper::Logger.new(STDOUT, :debug)
   DataMapper.setup(:default, "sqlite://#{File.expand_path(File.dirname(__FILE__))}/development.db")
 when 'test'
+  Slim::Engine.set_default_options :pretty => true
   DataMapper.setup(:default, "sqlite:memory:")
 end

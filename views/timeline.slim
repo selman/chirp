@@ -1,0 +1,13 @@
+h2 Last 10 Chips added.
+
+div class="tab"
+  ol class="statuses"
+    - Chirp.all.each do |chirp|
+      li
+        span class="status-body"
+          span class="thumb vcard author"
+            img width="48" height="48" src=chirp.user.photo_url
+          strong
+            a class="screen-name" href=chirp.user.email =chirp.user.nickname
+          span class="entry-content" =chirp.text
+          span class="meta entry-meta" =time_ago_in_words(chirp.created_at.to_time)
