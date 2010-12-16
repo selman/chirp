@@ -9,5 +9,7 @@ div class="tab"
             img width="48" height="48" src=chirp.user.photo_url
           strong
             a class="screen-name" href=chirp.user.email =chirp.user.nickname
+          br
           span class="entry-content" =chirp.text
+          br
           span class="meta entry-meta" =time_ago_in_words(chirp.created_at.to_time)

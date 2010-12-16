@@ -20,7 +20,7 @@ html
       a href='/direct_messages/received' direct messages #{@dm_count} | 
       a href='/logout' logout | 
       a href='/register' register
-      - unless @user == @myself && @myself.follows.include?(@user)
+      - unless @user == @myself and not @myself.follows.include?(@user)
         a href='/follow/<%= @user.email%>' | follow this chirper!
     div id='error' = flash[:error]
     == yield

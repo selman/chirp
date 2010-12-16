@@ -24,7 +24,9 @@ table class="columns" cellspacing="0"
                     img width="48" height="48" src=chirp.user.photo_url
                   strong
                     a class="screen-name" href=chirp.user.email =chirp.user.nickname
+                  br
                   span class="entry-content" =chirp.text
+                  br
                   span class="meta entry-meta" =time_ago_in_words(chirp.created_at.to_time)
     td id="side_base" class="colum round-right"
       div id="side"
