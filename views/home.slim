@@ -1,14 +1,13 @@
 div class="border"
-  - if @user.nil?
-    h1 Last 10 Chips added.
-  - elsif @user == @myself
+  - if @myself.nil? and not @user.nil?
+    img width="48" height="48" src=@user.photo_url
+    strong =@user.nickname
+  - elsif @myself == @user and not @myself.nil?
     form class="inline" method="POST" action="/chirp"
       textarea cols="40" rows="2" name="chirp"
       input value="update" type="submit"
   - else
-    span
-      img width="48" height="48" src=@user.photo_url
-      strong =@user.nickname
+    h2 Last 10 Chips added.
 
   div
     ol

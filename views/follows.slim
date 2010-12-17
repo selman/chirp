@@ -1,0 +1,21 @@
+div
+  - if request.path_info =~ /^\/follows/
+    h2 Follows
+    p You are following #{@user.follows.size} people.
+    - @user.follows.each do |follow|
+      a href="/#{follow.email}"
+        img width="48" height="48" src=follow.photo_url
+      a href="/#{follow.email}" 
+        strong #{follow.nickname} (#{follow.email})
+      div
+        form method="POST" action="/follows/#{@user.id}/#{follow.id}"
+          input type="hidden" name="_method" value="delete"
+          button remove
+  - else
+    h2 Followers
+    p You have #{@user.followers.size} followers.
+    - @user.followers.each do |follower|
+      a href="/#{follower.email}"
+        img width="48" height="48" src=follower.photo_url
+      a href="/#{follower.email}"
+        strong #{follower.nickname} (#{follower.email})

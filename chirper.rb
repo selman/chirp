@@ -50,11 +50,11 @@ class Chirper < Sinatra::Base
     redirect "/#{user.email}"
   end
 
-  ['/follows', '/followers'].each do |path|
+  ['/follows/:user_id', '/followers/:user_id'].each do |path|
     get path do
-      @myself = User.get(session[:userid])
+      @user = User.get(params[:user_id])
       @dm_count = dm_count
-      erb :follows
+      slim :follows
     end
   end
 
@@ -82,7 +82,7 @@ class Chirper < Sinatra::Base
   end
 
   get '/:email' do
-    @myself = User.get(params[:session])
+    @myself = User.get(session[:userid])
     if @myself.nil?
       @user = User.first(:email => params[:email])
     else
